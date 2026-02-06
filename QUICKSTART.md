@@ -58,7 +58,31 @@
 ## 🎯 Next Steps
 
 ### 1. Local Setup (without Docker)
+
+#### Option A: Using UV (Recommended - Much Faster!)
 ```bash
+# Install UV (if not already installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Setup with UV (creates venv + installs dependencies)
+./setup_uv.sh
+
+# Activate virtual environment
+source .venv/bin/activate
+
+# Run tests
+pytest tests/ -v
+
+# Quick demo (trains 500 episodes)
+python demo.py
+```
+
+#### Option B: Using pip (Traditional)
+```bash
+# Create virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
 # Install dependencies
 pip install -r requirements.txt
 

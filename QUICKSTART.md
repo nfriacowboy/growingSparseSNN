@@ -1,263 +1,263 @@
-# GrowingSparseSNN - Guia Rápido de Início 🚀
+# GrowingSparseSNN - Quick Start Guide 🚀
 
-## ✅ O que foi criado
+## ✅ What Was Created
 
-### 1. **Repositório GitHub**
+### 1. **GitHub Repository**
 - URL: https://github.com/nfriacowboy/growingSparseSNN
-- Repositório público com licença MIT
-- Commit inicial feito com toda a estrutura
+- Public repository with MIT license
+- Initial commit with complete structure
 
-### 2. **Arquitetura GrowingSparseSNN** (`src/models/growing_snn.py`)
-- SNN dinâmica com neurônios LIF (Leaky Integrate-and-Fire)
-- **Neurogenesis**: Adiciona neurônios quando firing rate < 0.05
-- **Pruning**: Remove neurônios com firing rate < 0.005
-- Começa com 64 neurônios, cresce até 512-1024
-- Otimizado para GPU AMD com ROCm
+### 2. **GrowingSparseSNN Architecture** (`src/models/growing_snn.py`)
+- Dynamic SNN with LIF (Leaky Integrate-and-Fire) neurons
+- **Neurogenesis**: Adds neurons when firing rate < 0.05
+- **Pruning**: Removes neurons with firing rate < 0.005
+- Starts with 64 neurons, grows up to 512-1024
+- Optimized for AMD GPU with ROCm
 
-### 3. **Ambiente de Teste** (`src/environments/grid_world.py`)
-- Grid 15×15 com agente e comida
-- Agente aprende a forragear (coletar comida)
-- Observação: 2 canais (posição do agente, posições de comida)
-- 4 ações: cima, baixo, esquerda, direita
+### 3. **Test Environment** (`src/environments/grid_world.py`)
+- 15×15 grid with agent and food
+- Agent learns to forage (collect food)
+- Observation: 2 channels (agent position, food positions)
+- 4 actions: up, down, left, right
 
-### 4. **Sistema de Treinamento** (`src/training/trainer.py`)
-- Algoritmo REINFORCE com baseline
-- Growth automático a cada 100 episódios
-- Pruning automático a cada 50 episódios
-- Métricas exportadas para Prometheus
+### 4. **Training System** (`src/training/trainer.py`)
+- REINFORCE algorithm with baseline
+- Automatic growth every 100 episodes
+- Automatic pruning every 50 episodes
+- Metrics exported to Prometheus
 
-### 5. **Monitoramento** (`src/monitoring/metrics.py`)
-- Prometheus/OpenMetrics integrado
-- Métricas: neuron count, firing rates, sparsity, rewards, energy
-- Porta: 8000
+### 5. **Monitoring** (`src/monitoring/metrics.py`)
+- Prometheus/OpenMetrics integrated
+- Metrics: neuron count, firing rates, sparsity, rewards, energy
+- Port: 8000
 - Grafana dashboards via docker-compose
 
 ### 6. **Docker + ROCm** (`docker/`)
-- Dockerfile baseado em `rocm/pytorch:rocm6.0`
-- docker-compose.yml com SNN + Prometheus + Grafana
-- Suporte completo para GPU AMD
+- Dockerfile based on `rocm/pytorch:rocm6.0`
+- docker-compose.yml with SNN + Prometheus + Grafana
+- Full support for AMD GPU
 
-### 7. **Testes Completos** (`tests/`)
-- `test_growth.py`: Testa neurogenesis
-- `test_pruning.py`: Testa poda de neurônios
-- `test_learning.py`: Testa treinamento e REINFORCE
-- `test_environment.py`: Testa ambiente de simulação
-- Executar com: `pytest tests/ -v --cov=src`
+### 7. **Complete Tests** (`tests/`)
+- `test_growth.py`: Tests neurogenesis
+- `test_pruning.py`: Tests neuron pruning
+- `test_learning.py`: Tests training and REINFORCE
+- `test_environment.py`: Tests simulation environment
+- Run with: `pytest tests/ -v --cov=src`
 
-### 8. **Scripts Úteis**
-- `setup.sh`: Setup inicial do ambiente
-- `run_tests.sh`: Executa testes com coverage
-- `build_docker.sh`: Build da imagem Docker
-- `demo.py`: Demo com visualizações
+### 8. **Utility Scripts**
+- `setup.sh`: Initial environment setup
+- `run_tests.sh`: Runs tests with coverage
+- `build_docker.sh`: Builds Docker image
+- `demo.py`: Demo with visualizations
 
-### 9. **Documentação**
-- `README.md`: Documentação principal
-- `docs/architecture.md`: Arquitetura detalhada
-- `configs/training_config.yaml`: Configuração de hiperparâmetros
+### 9. **Documentation**
+- `README.md`: Main documentation
+- `docs/architecture.md`: Detailed architecture
+- `configs/training_config.yaml`: Hyperparameter configuration
 
-## 🎯 Próximos Passos
+## 🎯 Next Steps
 
-### 1. Setup Local (sem Docker)
+### 1. Local Setup (without Docker)
 ```bash
-# Instalar dependências
+# Install dependencies
 pip install -r requirements.txt
 
-# Rodar testes
+# Run tests
 ./run_tests.sh
 
-# Demo rápido (treina 500 episódios)
+# Quick demo (trains 500 episodes)
 python demo.py
 ```
 
-### 2. Setup com Docker + ROCm (Recomendado para GPU AMD)
+### 2. Setup with Docker + ROCm (Recommended for AMD GPU)
 ```bash
-# Build imagem
+# Build image
 ./build_docker.sh
 
-# Ou usar docker-compose
+# Or use docker-compose
 cd docker
 docker-compose up -d
 
-# Ver logs
+# View logs
 docker-compose logs -f snn-training
 
-# Acessar container
+# Access container
 docker exec -it growing-snn-train bash
 ```
 
-### 3. Treinar Modelo Completo
+### 3. Train Complete Model
 ```bash
-# Com configuração padrão
+# With default configuration
 python src/training/train.py
 
-# Com configuração customizada
+# With custom configuration
 python src/training/train.py --config configs/training_config.yaml
 
-# Com mais episódios
+# With more episodes
 python src/training/train.py --episodes 5000 --lr 0.001
 ```
 
-### 4. Monitorar Treinamento
+### 4. Monitor Training
 ```bash
-# Iniciar serviços de monitoramento
+# Start monitoring services
 cd docker
 docker-compose up prometheus grafana
 
-# Acessar:
+# Access:
 # - Prometheus: http://localhost:9090
 # - Grafana: http://localhost:3000 (admin/admin)
-# - Métricas raw: http://localhost:8000/metrics
+# - Raw metrics: http://localhost:8000/metrics
 ```
 
-### 5. Experimentos Sugeridos
+### 5. Suggested Experiments
 
-#### Baseline: Rede Fixa
+#### Baseline: Fixed Network
 ```python
-# Modificar training_config.yaml:
+# Modify training_config.yaml:
 training:
-  grow_interval: 999999  # Nunca cresce
-  prune_interval: 999999  # Nunca poda
+  grow_interval: 999999  # Never grows
+  prune_interval: 999999  # Never prunes
 ```
 
-#### Growth Agressivo
+#### Aggressive Growth
 ```python
 training:
-  grow_interval: 25       # Cresce mais frequentemente
-  grow_threshold: 0.1     # Threshold mais alto
-  neurons_per_grow: 64    # Adiciona mais neurônios
+  grow_interval: 25       # Grows more frequently
+  grow_threshold: 0.1     # Higher threshold
+  neurons_per_grow: 64    # Adds more neurons
 ```
 
-#### Pruning Agressivo
+#### Aggressive Pruning
 ```python
 training:
   prune_interval: 20
-  prune_threshold: 0.01   # Remove neurônios menos ativos
+  prune_threshold: 0.01   # Removes less active neurons
 ```
 
-## 📊 Métricas Implementadas
+## 📊 Implemented Metrics
 
-| Métrica | Descrição |
-|---------|-----------|
-| `snn_neuron_count` | Número atual de neurônios |
-| `snn_avg_firing_rate` | Taxa média de disparo |
-| `snn_sparsity` | Proporção de neurônios inativos |
-| `snn_episode_reward` | Reward do episódio atual |
-| `snn_growth_events_total` | Total de eventos de crescimento |
-| `snn_pruning_events_total` | Total de eventos de poda |
-| `snn_energy_estimate` | Estimativa de energia (spikes × neurons) |
+| Metric | Description |
+|--------|-------------|
+| `snn_neuron_count` | Current number of neurons |
+| `snn_avg_firing_rate` | Average firing rate |
+| `snn_sparsity` | Proportion of inactive neurons |
+| `snn_episode_reward` | Current episode reward |
+| `snn_growth_events_total` | Total growth events |
+| `snn_pruning_events_total` | Total pruning events |
+| `snn_energy_estimate` | Energy estimate (spikes × neurons) |
 
-## 🔬 Hipótese Experimental
+## 🔬 Experimental Hypothesis
 
-**H0**: Uma SNN com crescimento dinâmico (64→512 neurons) + pruning aprende melhor que uma rede fixa de 512 neurons.
+**H0**: A SNN with dynamic growth (64→512 neurons) + pruning learns better than a fixed 512-neuron network.
 
-**Métricas para validar**:
-1. **Sample efficiency**: Episódios até convergência
-2. **Final performance**: Reward médio após convergência
-3. **Energy efficiency**: Energia total consumida
-4. **Adaptação**: Performance em novas tarefas
+**Metrics to validate**:
+1. **Sample efficiency**: Episodes until convergence
+2. **Final performance**: Average reward after convergence
+3. **Energy efficiency**: Total energy consumed
+4. **Adaptation**: Performance on new tasks
 
 ## 🛠 Troubleshooting
 
-### Problema: Norse não encontrado
+### Issue: Norse not found
 ```bash
 pip install norse
 ```
 
-### Problema: ROCm não detectado
+### Issue: ROCm not detected
 ```bash
-# Verificar instalação ROCm
+# Check ROCm installation
 rocm-smi
 
-# Verificar PyTorch com ROCm
+# Check PyTorch with ROCm
 python -c "import torch; print(torch.__version__)"
-# Deve mostrar algo como: 2.1.0+rocm5.7
+# Should show something like: 2.1.0+rocm5.7
 
-# Se não, reinstalar PyTorch para ROCm:
+# If not, reinstall PyTorch for ROCm:
 pip install torch --index-url https://download.pytorch.org/whl/rocm5.7
 ```
 
-### Problema: GPU não detectada
+### Issue: GPU not detected
 ```bash
 python -c "import torch; print(torch.cuda.is_available())"
-# Se False, verificar drivers e ROCm
+# If False, check drivers and ROCm
 ```
 
-### Problema: Porta 8000 em uso
+### Issue: Port 8000 in use
 ```bash
-# Modificar porta no código ou:
+# Modify port in code or:
 python src/training/train.py --metrics-port 8001
 ```
 
-## 📚 Estrutura de Arquivos
+## 📚 File Structure
 
 ```
 growingSparseSNN/
 ├── src/
 │   ├── models/
-│   │   └── growing_snn.py          # ⭐ Modelo principal
+│   │   └── growing_snn.py          # ⭐ Main model
 │   ├── environments/
-│   │   └── grid_world.py           # Ambiente de simulação
+│   │   └── grid_world.py           # Simulation environment
 │   ├── training/
-│   │   ├── trainer.py              # ⭐ Loop de treinamento
-│   │   └── train.py                # Script principal
+│   │   ├── trainer.py              # ⭐ Training loop
+│   │   └── train.py                # Main script
 │   └── monitoring/
 │       └── metrics.py              # Prometheus metrics
-├── tests/                          # Testes unitários
+├── tests/                          # Unit tests
 ├── docker/                         # Docker + ROCm
-├── configs/                        # Configurações YAML
-├── docs/                           # Documentação
-├── demo.py                         # ⭐ Demo rápido
-└── README.md                       # Documentação principal
+├── configs/                        # YAML configurations
+├── docs/                           # Documentation
+├── demo.py                         # ⭐ Quick demo
+└── README.md                       # Main documentation
 ```
 
-## 🎓 Conceitos Chave
+## 🎓 Key Concepts
 
-### Neurogenesis (Crescimento)
-- Adiciona neurônios quando capacidade é insuficiente
+### Neurogenesis (Growth)
+- Adds neurons when capacity is insufficient
 - Trigger: avg_firing_rate < 0.05
-- Preserva pesos existentes
-- Inicializa novos com Kaiming + noise
+- Preserves existing weights
+- Initializes new ones with Kaiming + noise
 
-### Pruning (Poda)
-- Remove neurônios inativos
+### Pruning
+- Removes inactive neurons
 - Trigger: firing_rate < 0.005
-- Mantém no mínimo 32 neurônios
-- Reconstrói rede menor
+- Maintains at least 32 neurons
+- Reconstructs smaller network
 
 ### LIF Neurons
 - Leaky Integrate-and-Fire
 - τ_mem = 20ms, τ_syn = 10ms
 - Threshold = 1.0
-- Spikes binários (0 ou 1)
+- Binary spikes (0 or 1)
 
 ### REINFORCE Learning
-- Policy gradient com baseline
+- Policy gradient with baseline
 - Discount γ = 0.99
 - Adam optimizer
 - Gradient clipping (max_norm=1.0)
 
-## 🚀 Status do Projeto
+## 🚀 Project Status
 
-✅ Repositório GitHub criado  
-✅ Arquitetura implementada  
-✅ Testes completos  
-✅ Docker + ROCm configurado  
-✅ Monitoramento Prometheus/Grafana  
-✅ Demo funcional  
-✅ Documentação completa  
+✅ GitHub repository created  
+✅ Architecture implemented  
+✅ Complete tests  
+✅ Docker + ROCm configured  
+✅ Prometheus/Grafana monitoring  
+✅ Functional demo  
+✅ Complete documentation  
 
-🔄 **Próximo**: Treinar e validar a hipótese experimental!
+🔄 **Next**: Train and validate experimental hypothesis!
 
-## 📞 Recursos
+## 📞 Resources
 
-- **Repositório**: https://github.com/nfriacowboy/growingSparseSNN
+- **Repository**: https://github.com/nfriacowboy/growingSparseSNN
 - **Norse Docs**: https://norse.github.io/norse/
 - **ROCm Docs**: https://rocm.docs.amd.com/
 - **PyTorch SNN Tutorial**: https://snntorch.readthedocs.io/
 
 ---
 
-**Criado em**: 2026-02-06  
-**Autor**: nfriacowboy  
+**Created**: 2026-02-06  
+**Author**: nfriacowboy  
 **GPU Target**: AMD Radeon RX 6900 XT (ROCm 6.0)  
 **Framework**: PyTorch + Norse + OpenMetrics

@@ -1,0 +1,42 @@
+# Dockerfile for GrowingSparseSNN with ROCm support
+# Base: Official ROCm PyTorch image
+FROM rocm/pytorch:rocm6.0_ubuntu22.04_py3.10_pytorch_2.1.1
+
+# Set working directory
+WORKDIR /workspace
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    wget \
+    vim \
+    htop \
+    rocm-smi \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip
+RUN pip install --upgrade pip setuptools wheel
+
+# Copy requirements first (for better caching)
+COPY requirements.txt /workspace/
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install norse from source if needed (for latest features)
+RUN pip install norse
+
+# Copy project files
+COPY . /workspace/
+
+# Set environment variables for ROCm
+ENV HSA_OVERRIDE_GFX_VERSION=10.3.0
+ENV ROCM_HOME=/opt/rocm
+ENV PATH=$ROCM_HOME/bin:$PATH
+ENV LD_LIBRARY_PATH=$ROCM_HOME/lib:$LD_LIBRARY_PATH
+
+# Expose ports for monitoring
+EXPOSE 8000 9090 3000
+
+# Default command
+CMD ["/bin/bash"]

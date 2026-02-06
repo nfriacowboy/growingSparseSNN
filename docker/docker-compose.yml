@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  snn-training:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.rocm
+    image: growing-snn:rocm
+    container_name: growing-snn-train
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    group_add:
+      - video
+    ipc: host
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp=unconfined
+    volumes:
+      - ..:/workspace
+      - ./results:/workspace/results
+      - ./checkpoints:/workspace/checkpoints
+    environment:
+      - PYTORCH_ROCM_ARCH=gfx1030
+      - HSA_OVERRIDE_GFX_VERSION=10.3.0
+    networks:
+      - monitoring
+    command: python src/training/train.py
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana-dashboards:/etc/grafana/provisioning/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    networks:
+      - monitoring
+    depends_on:
+      - prometheus
+
+networks:
+  monitoring:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  grafana_data:

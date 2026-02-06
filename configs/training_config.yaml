@@ -1,0 +1,43 @@
+# Model configuration
+model:
+  input_features: 450  # 15x15 grid × 2 channels
+  init_hidden: 64      # Start with 64 neurons
+  max_hidden: 512      # Grow up to 512 neurons
+  output_features: 4   # 4 actions (up, down, left, right)
+  tau_mem: 20.0        # Membrane time constant (ms)
+  tau_syn: 10.0        # Synaptic time constant (ms)
+  v_thresh: 1.0        # Spike threshold
+
+# Environment configuration
+environment:
+  size: 15             # Grid size (15×15)
+  n_food: 10           # Number of food items
+  max_steps: 500       # Maximum steps per episode
+  food_respawn: true   # Respawn food when collected
+  wall_penalty: false  # Penalty for hitting walls
+
+# Training configuration
+training:
+  episodes: 2000       # Total training episodes
+  lr: 0.001            # Learning rate
+  gamma: 0.99          # Discount factor
+  baseline_momentum: 0.9  # Baseline EMA momentum
+  
+  # SNN simulation
+  timesteps: 10        # Number of timesteps per forward pass
+  
+  # Growth and pruning
+  grow_interval: 100   # Check for growth every N episodes
+  prune_interval: 50   # Check for pruning every N episodes
+  grow_threshold: 0.05 # Grow if avg firing rate < threshold
+  prune_threshold: 0.005  # Prune neurons with rate < threshold
+  min_neurons: 32      # Minimum neurons to keep
+  neurons_per_grow: 32 # Neurons to add per growth event
+  
+  # Logging and evaluation
+  log_interval: 10     # Log every N episodes
+  eval_interval: 50    # Evaluate every N episodes
+  checkpoint_interval: 200  # Save checkpoint every N episodes
+  
+  # Monitoring
+  metrics_port: 8000   # Prometheus metrics port

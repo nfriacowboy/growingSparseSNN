@@ -1,0 +1,35 @@
+# Core dependencies for GrowingSparseSNN
+# Optimized for AMD GPU with ROCm support
+
+# Deep Learning
+torch>=2.1.0  # ROCm-compatible PyTorch (install from PyTorch ROCm wheels)
+norse>=1.0.0  # Spiking Neural Network library
+numpy>=1.24.0,<2.0.0
+
+# Environment and RL
+gymnasium>=0.29.0
+
+# Visualization and Analysis
+matplotlib>=3.8.0
+seaborn>=0.13.0
+pandas>=2.1.0
+
+# Configuration
+pyyaml>=6.0
+
+# Monitoring (OpenMetrics/Prometheus)
+prometheus-client>=0.19.0
+
+# Utilities
+tqdm>=4.66.0
+tensorboard>=2.15.0
+
+# Development (optional, comment out for production)
+pytest>=7.4.0
+pytest-cov>=4.1.0
+black>=23.12.0
+flake8>=6.1.0
+ipython>=8.18.0
+
+# Note: Install PyTorch with ROCm from:
+# pip install torch --index-url https://download.pytorch.org/whl/rocm5.7

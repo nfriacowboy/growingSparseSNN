@@ -30,24 +30,24 @@ A research project exploring **neurogenesis** (neuron growth), **synaptic prunin
 ## 📦 Installation
 
 ### Prerequisites
-- Docker + ROCm support (for GPU training)
+- Docker + ROCm support (for GPU training, optional)
 - AMD GPU with ROCm drivers (optional, can run on CPU)
 - Python 3.10+
-- [UV](https://github.com/astral-sh/uv) (recommended) or pip
+- [UV](https://github.com/astral-sh/uv) - Fast Python package manager
 
 ### Quick Start
 
-#### Using UV (Recommended - Fast Setup)
+#### Local Setup with UV
 ```bash
 # Clone the repository
 git clone https://github.com/nfriacowboy/growingSparseSNN.git
 cd growingSparseSNN
 
-# Install UV (if not already installed)
+# Install UV
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Setup environment (creates venv + installs deps)
-./setup_uv.sh
+./setup.sh
 
 # Activate virtual environment
 source .venv/bin/activate
@@ -59,7 +59,7 @@ pytest tests/ -v
 python src/training/train.py
 ```
 
-#### Using Docker + ROCm (for AMD GPU)
+#### Using Docker + ROCm (alternative for GPU)
 ```bash
 # Build Docker image with ROCm
 docker build -t growing-snn:rocm -f docker/Dockerfile.rocm .

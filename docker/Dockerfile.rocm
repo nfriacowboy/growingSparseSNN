@@ -14,17 +14,18 @@ RUN apt-get update && apt-get install -y \
     rocm-smi \
     && rm -rf /var/lib/apt/lists/*
 
-# Upgrade pip
-RUN pip install --upgrade pip setuptools wheel
+# Install UV (fast package manager)
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.cargo/bin:$PATH"
 
 # Copy requirements first (for better caching)
 COPY requirements.txt /workspace/
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install Python dependencies with UV (much faster)
+RUN uv pip install --system -r requirements.txt
 
-# Install norse from source if needed (for latest features)
-RUN pip install norse
+# Install norse
+RUN uv pip install --system norse
 
 # Copy project files
 COPY . /workspace/

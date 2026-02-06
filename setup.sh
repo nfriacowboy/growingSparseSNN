@@ -1,38 +1,62 @@
 #!/bin/bash
-# Quick setup script for GrowingSparseSNN
+# Setup GrowingSparseSNN with UV (fast Python package manager)
+# UV is 10-100x faster than pip
+# More info: https://github.com/astral-sh/uv
 
 set -e
 
-echo "🧠 Setting up GrowingSparseSNN..."
+echo "🧠 Setting up GrowingSparseSNN with UV..."
+
+# Check if UV is installed
+if ! command -v uv &> /dev/null; then
+    echo "⚠ UV not found. Installing UV..."
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    export PATH="$HOME/.cargo/bin:$PATH"
+    echo "✓ UV installed successfully"
+fi
+
+UV_VERSION=$(uv --version 2>/dev/null || echo "unknown")
+echo "✓ UV found: $UV_VERSION"
+
+# Create virtual environment with UV
+if [ ! -d ".venv" ]; then
+    echo "Creating virtual environment with UV..."
+    uv venv .venv --python 3.10
+    echo "✓ Virtual environment created at .venv/"
+else
+    echo "✓ Virtual environment already exists at .venv/"
+fi
+
+# Activate virtual environment
+echo "Activating virtual environment..."
+source .venv/bin/activate
+
+# Install dependencies with UV (much faster than pip)
+echo "Installing dependencies with UV..."
+uv pip install -r requirements.txt
+
+echo ""
+echo "✅ Setup complete with UV!"
+echo ""
+echo "To activate the environment:"
+echo "  source .venv/bin/activate"
+echo ""
+echo "To deactivate:"
+echo "  deactivate"
+echo ""
 
 # Create necessary directories
-echo "Creating directories..."
+echo "Creating project directories..."
 mkdir -p checkpoints results logs
 
-# Check if running in Docker
-if [ -f /.dockerenv ]; then
-    echo "✓ Running inside Docker container"
-else
-    echo "⚠ Not running in Docker. Consider using docker-compose for full setup."
-fi
-
-# Check Python
-if command -v python3 &> /dev/null; then
-    PYTHON_VERSION=$(python3 --version)
-    echo "✓ Python found: $PYTHON_VERSION"
-else
-    echo "✗ Python3 not found. Please install Python 3.10+"
-    exit 1
-fi
-
-# Check PyTorch
-if python3 -c "import torch" 2>/dev/null; then
-    TORCH_VERSION=$(python3 -c "import torch; print(torch.__version__)")
+# Check PyTorch installation
+if python -c "import torch" 2>/dev/null; then
+    TORCH_VERSION=$(python -c "import torch; print(torch.__version__)")
     echo "✓ PyTorch found: $TORCH_VERSION"
     
     # Check for CUDA/ROCm
-    if python3 -c "import torch; exit(0 if torch.cuda.is_available() else 1)" 2>/dev/null; then
-        GPU_NAME=$(python3 -c "import torch; print(torch.cuda.get_device_name(0))")
+    if python -c "import torch; exit(0 if torch.cuda.is_available() else 1)" 2>/dev/null; then
+        GPU_NAME=$(python -c "import torch; print(torch.cuda.get_device_name(0))")
         echo "✓ GPU detected: $GPU_NAME"
         
         if [[ $TORCH_VERSION == *"rocm"* ]]; then
@@ -42,26 +66,25 @@ if python3 -c "import torch" 2>/dev/null; then
         echo "⚠ No GPU detected. Will run on CPU."
     fi
 else
-    echo "✗ PyTorch not found. Installing dependencies..."
-    pip install -r requirements.txt
+    echo "⚠ PyTorch not found. You may need to install it manually:"
+    echo "  uv pip install torch --index-url https://download.pytorch.org/whl/rocm5.7"
 fi
 
-# Check norse
-if python3 -c "import norse" 2>/dev/null; then
+# Check Norse
+if python -c "import norse" 2>/dev/null; then
     echo "✓ Norse (SNN library) found"
 else
     echo "⚠ Norse not found. Installing..."
-    pip install norse
+    uv pip install norse
 fi
 
 echo ""
-echo "✅ Setup complete!"
+echo "🚀 Quick start:"
+echo "  1. Activate venv: source .venv/bin/activate"
+echo "  2. Run tests: pytest tests/ -v"
+echo "  3. Train model: python src/training/train.py"
+echo "  4. Run demo: python demo.py"
 echo ""
-echo "Quick start:"
-echo "  1. Run tests: pytest tests/ -v"
-echo "  2. Train model: python src/training/train.py"
-echo "  3. View metrics: docker-compose up prometheus grafana"
-echo ""
-echo "For full setup with monitoring:"
-echo "  docker-compose up"
+echo "For ROCm PyTorch (AMD GPU):"
+echo "  uv pip install torch --index-url https://download.pytorch.org/whl/rocm5.7"
 echo ""

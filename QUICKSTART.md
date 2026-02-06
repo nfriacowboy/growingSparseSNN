@@ -59,35 +59,18 @@
 
 ### 1. Local Setup (without Docker)
 
-#### Option A: Using UV (Recommended - Much Faster!)
 ```bash
 # Install UV (if not already installed)
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Setup with UV (creates venv + installs dependencies)
-./setup_uv.sh
+./setup.sh
 
 # Activate virtual environment
 source .venv/bin/activate
 
 # Run tests
 pytest tests/ -v
-
-# Quick demo (trains 500 episodes)
-python demo.py
-```
-
-#### Option B: Using pip (Traditional)
-```bash
-# Create virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run tests
-./run_tests.sh
 
 # Quick demo (trains 500 episodes)
 python demo.py
@@ -184,7 +167,7 @@ training:
 
 ### Issue: Norse not found
 ```bash
-pip install norse
+uv pip install norse
 ```
 
 ### Issue: ROCm not detected
@@ -197,7 +180,7 @@ python -c "import torch; print(torch.__version__)"
 # Should show something like: 2.1.0+rocm5.7
 
 # If not, reinstall PyTorch for ROCm:
-pip install torch --index-url https://download.pytorch.org/whl/rocm5.7
+uv pip install torch --index-url https://download.pytorch.org/whl/rocm5.7
 ```
 
 ### Issue: GPU not detected

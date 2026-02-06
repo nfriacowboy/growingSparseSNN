@@ -1,34 +1,30 @@
-# UV Environment Management
+# UV Package Manager
 
-This project supports [UV](https://github.com/astral-sh/uv), a blazing-fast Python package manager from Astral (creators of Ruff).
+This project uses [UV](https://github.com/astral-sh/uv) exclusively for Python package management.
 
-## Why UV?
+## Why UV Only?
 
 - **10-100x faster** than pip
-- **Unified tool**: replaces pip, pip-tools, pipx, poetry, pyenv, virtualenv
 - **Reliable**: Resolves dependencies correctly every time
-- **Compatible**: Works with existing requirements.txt and pyproject.toml
+- **Unified tool**: Handles venv creation, package installation, and dependency resolution
+- **Modern**: Built with Rust for maximum performance
+- **No pip needed**: UV is a complete replacement
 
 ## Installation
 
-### Install UV
 ```bash
-# Unix/macOS/Linux
+# Install UV (one-time setup)
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# Or via pip
-pip install uv
-
-# Or via cargo
-cargo install --git https://github.com/astral-sh/uv uv
+# Verify installation
+uv --version
 ```
 
-## Usage
+## Quick Start
 
-### Quick Setup
 ```bash
 # One command to setup everything
-./setup_uv.sh
+./setup.sh
 
 # Activate the virtual environment
 source .venv/bin/activate
@@ -101,6 +97,8 @@ deactivate
 | Resolve dependencies | ~30s | ~0.5s | **60x faster** |
 | Install PyTorch | ~120s | ~8s | **15x faster** |
 
+*Note: This project uses UV exclusively. pip is not required or supported.*
+
 ## UV Configuration
 
 UV uses standard Python configuration:
@@ -149,6 +147,6 @@ rm -rf ~/.cache/uv
 - [UV vs pip comparison](https://github.com/astral-sh/uv#highlights)
 - [Astral Blog](https://astral.sh/blog)
 
----
+---This project uses UV exclusively as its package manager. Traditional pip workflows are not supported. UV provides all necessary functionality with significantly better performance
 
 **Note**: UV is compatible with existing pip workflows. You can use both tools interchangeably, but UV is significantly faster for installation and dependency resolution.
